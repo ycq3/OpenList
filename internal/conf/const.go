@@ -46,6 +46,12 @@ const (
 	IgnoreDirectLinkParams  = "ignore_direct_link_params"
 	WebauthnLoginEnabled    = "webauthn_login_enabled"
 
+	// credits system
+	CreditsEnabled          = "credits_enabled"
+	DefaultFileCredits      = "default_file_credits"
+	CreditsPerMB           = "credits_per_mb"
+	MinCreditsForDownload  = "min_credits_for_download"
+
 	// index
 	SearchIndex     = "search_index"
 	AutoUpdateIndex = "auto_update_index"

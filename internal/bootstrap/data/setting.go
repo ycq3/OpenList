@@ -225,6 +225,12 @@ func InitialSettings() []model.SettingItem {
 		{Key: conf.StreamMaxClientUploadSpeed, Value: "-1", Type: conf.TypeNumber, Group: model.TRAFFIC, Flag: model.PRIVATE},
 		{Key: conf.StreamMaxServerDownloadSpeed, Value: "-1", Type: conf.TypeNumber, Group: model.TRAFFIC, Flag: model.PRIVATE},
 		{Key: conf.StreamMaxServerUploadSpeed, Value: "-1", Type: conf.TypeNumber, Group: model.TRAFFIC, Flag: model.PRIVATE},
+
+		// credits system settings
+		{Key: conf.CreditsEnabled, Value: "false", Type: conf.TypeBool, Group: model.CREDITS, Flag: model.PUBLIC, Help: "Enable credits system for file downloads"},
+		{Key: conf.DefaultFileCredits, Value: "10", Type: conf.TypeNumber, Group: model.CREDITS, Flag: model.PRIVATE, Help: "Default credits required for file downloads"},
+		{Key: conf.CreditsPerMB, Value: "1", Type: conf.TypeNumber, Group: model.CREDITS, Flag: model.PRIVATE, Help: "Credits required per MB of file size"},
+		{Key: conf.MinCreditsForDownload, Value: "1", Type: conf.TypeNumber, Group: model.CREDITS, Flag: model.PRIVATE, Help: "Minimum credits required for any download"},
 	}
 	additionalSettingItems := tool.Tools.Items()
 	// 固定顺序

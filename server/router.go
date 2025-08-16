@@ -86,15 +86,37 @@ func Init(e *gin.Engine) {
 	webauthn.POST("/delete_authn", handles.DeleteAuthnLogin)
 	webauthn.GET("/getcredentials", handles.GetAuthnCredentials)
 
+	// user registration (no auth required)
+	api.POST("/register", handles.CreateRegistration)
+	api.POST("/register/verify", handles.VerifyRegistration)
+	api.POST("/verification/send", handles.SendVerificationCode)
+	api.POST("/verification/verify", handles.VerifyCode)
+
+	// credits system
+	auth.GET("/credits", handles.GetUserCredits)
+	auth.GET("/credits/transactions", handles.GetCreditTransactions)
+	auth.GET("/credits/config", handles.GetFileCreditsConfig)
+	auth.GET("/credits/download/check", handles.CheckDownloadPermission)
+	auth.POST("/credits/download/deduct", handles.DeductCreditsForDownload)
+	auth.POST("/credits/redeem", handles.RedeemCode)
+	auth.POST("/credits/payment/create", handles.CreatePaymentOrder)
+	auth.POST("/credits/payment/complete", handles.CompletePaymentOrder)
+	auth.DELETE("/credits/payment/:order_no", handles.CancelPaymentOrder)
+
 	// no need auth
 	public := api.Group("/public")
 	public.Any("/settings", handles.PublicSettings)
 	public.Any("/offline_download_tools", handles.OfflineDownloadTools)
 	public.Any("/archive_extensions", handles.ArchiveExtensions)
+	
+	// payment notifications (webhook endpoints)
+	api.POST("/payment/notify/:provider", handles.PaymentNotification)
 
 	_fs(auth.Group("/fs"))
 	_task(auth.Group("/task", middlewares.AuthNotGuest))
 	admin(auth.Group("/admin", middlewares.AuthAdmin))
+	_userRegistration(auth.Group("/admin", middlewares.AuthAdmin))
+	_credits(auth.Group("/admin", middlewares.AuthAdmin))
 	if flags.Debug || flags.Dev {
 		debug(g.Group("/debug"))
 	}
@@ -196,6 +218,20 @@ func _fs(g *gin.RouterGroup) {
 	a.Any("/meta", handles.FsArchiveMeta)
 	a.Any("/list", handles.FsArchiveList)
 	a.POST("/decompress", handles.FsArchiveDecompress)
+}
+
+func _userRegistration(g *gin.RouterGroup) {
+	reg := g.Group("/registration")
+	reg.GET("/list", handles.ListPendingRegistrations)
+	reg.POST("/approve", handles.ApproveRegistration)
+	reg.POST("/reject", handles.RejectRegistration)
+}
+
+func _credits(g *gin.RouterGroup) {
+	credits := g.Group("/credits")
+	credits.POST("/config/set", handles.SetFileCreditsConfig)
+	credits.DELETE("/config/delete", handles.DeleteFileCreditsConfig)
+	credits.POST("/redeem/generate", handles.GenerateRedeemCodes)
 }
 
 func _task(g *gin.RouterGroup) {
